@@ -20,9 +20,7 @@ def most_common_word(file_path):
         data = f.readlines()
     result = data[0].split()
     c = Counter(result)
-    if c.most_common(1):
-        return c.most_common(1)[0]
-    return "No words"
+    return c.most_common(1)[0] if c.most_common(1) else "No words"
 
 if __name__ == "__main__":
     from argparse import ArgumentParser

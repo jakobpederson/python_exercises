@@ -31,12 +31,18 @@ class BasicSyntaxTwoTest(unittest.TestCase):
             with open(path, 'w') as f:
                 f.write(data)
 
+    def tearDown(self):
+        self.delete_if_exists()
+
     def delete_if_exists(self):
         for path in self.FILES.keys():
-            try:
-                os.remove(path)
-            except OSError:
-                pass
+            self.delete_or_pass(path)
+
+    def delete_or_pass(self, path):
+        try:
+            os.remove(path)
+        except OSError:
+            pass
 
     def test_gets_most_common_word_and_count(self):
         self.assertEqual(('duck', 3), most_common_word("test_1.txt"))
