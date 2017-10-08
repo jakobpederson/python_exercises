@@ -34,21 +34,35 @@ p2p0,,inactive
 '''
 
 def get_data(lines):
-    x = []
+    data = split_out_data(lines)
+    return fill_gaps(data)
+
+def split_out_data(lines):
+    data = []
     for line in lines:
-        count = True
         if len(line.split(' flags')) > 1:
-            x.append(line.split(':')[0])
+            data.append(line.split(':')[0] + '|')
         if len(line.split('inet ')) > 1:
-            x.append(line[5:].strip('\n'))
+            data.append(line[5:].strip('\n') + '||')
         if len(line.split('status:')) > 1:
-            x.append(line)
-    if len(x) < 3:
-        x.append('0')
-    return get_activity(x)
+            data.append(line + '|||')
+    for i in range(len(data)):
+        print(data[i])
+        if data[i].endswith('|'):
+            if not data[i+1].endswith('||') and not data[i + 1] == '0':
+                data.insert(i + 1, '0')
+        if data[i].endswith('||'):
+            if not data[i+1].endswith('|||') and not data[i + 1] == '0':
+                data.insert(i + 1, '0')
+    print(data)
+    return data
 
 
-def get_activity(data):
+def fill_gaps(data):
+    if len(data) < 2:
+        data.append('0')
+    if len(data) < 3:
+        data.append('0')
     if len(data) > 3 and len(data) % 3 != 0:
         for y in data[1::3]:
             if not y.startswith('status:'):
