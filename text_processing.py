@@ -43,24 +43,37 @@ def get_network_stats(file_name):
         interface = get_interface(lines)
         inet = get_inet(lines)
         status = get_status(lines)
-    return [interface, inet, status]
+    results = create_list(interface, inet, status)
+    return results
+
+def create_list(interface, inet, status):
+    results = []
+    for i in range(len(interface)):
+        results.append(
+            Stats(interface[i], inet[i], status[i] if status[i] else "")
+        )
+    return results
 
 def get_interface(lines):
     lst = lines
     result = []
     for value in lst:
         var = value.split(':')
-        if var[0] not in ("status", "media"):
-            return var[0]
+        if var[0] not in ("status", "media") and len(var) > 1:
+            result.append(var[0])
+    return result
 
 def get_inet(lines):
+    result = []
     for line in lines:
         if "inet " in line:
-            return line[5:].replace('\n', '')
+            result.append(line[5:].replace('\n', ''))
+    return result
 
 def get_status(lines):
+    result = []
     for line in lines:
         if line.startswith('status:'):
-            return line[7:].replace('\n', '')
-    return ""
+            result.append(line[7:].replace('\n', ''))
+    return result
 
