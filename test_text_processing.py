@@ -15,7 +15,7 @@ class TextProcessingTest(unittest.TestCase):
         "test_1.txt": "lo0: flags=9<up>mtu\noptions=12::\ninet 1234\nstatus:active",
         "test_2.txt": "ex0: flags=9<up>mtu\noptions=12\ninet 5678\n",
         "test_3.txt": "zo0o: flags=9<up>mtu\noptions=12\ninet 9101\nstatus:active",
-        "test_4.txt": "lo0: flags=9<up>mtu\noptions=12\ninet 1234\nstatus:active\nzo0o: flags=9<up>mtu\noptions=12\ninet 9101\nstatus:active",
+        "test_4.txt": "lo0: flags=9<up>mtu\noptions=12\ninet 1234\nzo0o: flags=9<up>mtu\noptions=12\ninet 9101\nstatus:active",
         }
         self.delete_if_exists()
         for path, data in self.FILES.items():
@@ -35,25 +35,20 @@ class TextProcessingTest(unittest.TestCase):
         except OSError:
             pass
 
-    def test_extracts_network_stats(self):
-        result_1 = text_processing.get_network_stats("test_1.txt")
-        result_2 = text_processing.get_network_stats("test_2.txt")
-        # result_3 = text_processing.get_network_stats("test_3.txt")
-        # result_4 = text_processing.get_network_stats("test_4.txt")
-        self.assertCountEqual(['lo0', '1234', 'active'], result_1)
-        self.assertCountEqual(["ex0", "5678", ""], result_2)
-        # self.assertCountEqual(["ex0", "5678", ""], result_2)
-        # self.assertCountEqual(["zo0o", "9101", "active"], result_3)
-        # self.assertCountEqual([
-        #     ["lo0", "1234", "active"],
-        #     ["zo0o", "9101", "active"]
-        # ], result_4)
+    def test_y(self):
+        lines = self.get_lines('test_4.txt')
+        result = text_processing.get_data(lines)
+        expected = [
+            ["lo0", "1234", "0"],
+            ["zo0o", "9101", "status:active"]
+        ]
+        print(result)
+        self.assertCountEqual(expected, result)
+        self.fail('x')
 
-    def test_x(self):
-        with open('test_1.txt', 'r') as f:
-            lines = f.readlines()
-            result = text_processing.get_interface(lines)
-        expected = ['lo0']
-        self.assertEqual(expected, result)
+    def get_lines(self, file_name):
+        with open(file_name, 'r') as f:
+            return f.readlines()
+
 
 
