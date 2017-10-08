@@ -1,14 +1,18 @@
 import os
 import unittest
+from collections import namedtuple
 
 import text_processing
+
+
+Stats = namedtuple("Stats", ["interface", "inet", "status"])
 
 
 class TextProcessingTest(unittest.TestCase):
 
     def setUp(self):
         self.FILES = {
-        "test_1.txt": "lo0: flags=9<up>mtu\noptions=12\ninet 1234\nstatus:active",
+        "test_1.txt": "lo0: flags=9<up>mtu\noptions=12::\ninet 1234\nstatus:active",
         "test_2.txt": "ex0: flags=9<up>mtu\noptions=12\ninet 5678\n",
         "test_3.txt": "zo0o: flags=9<up>mtu\noptions=12\ninet 9101\nstatus:active",
         "test_4.txt": "lo0: flags=9<up>mtu\noptions=12\ninet 1234\nstatus:active\nzo0o: flags=9<up>mtu\noptions=12\ninet 9101\nstatus:active",
@@ -33,10 +37,11 @@ class TextProcessingTest(unittest.TestCase):
 
     def test_extracts_network_stats(self):
         result_1 = text_processing.get_network_stats("test_1.txt")
-        # result_2 = text_processing.get_network_stats("test_2.txt")
+        result_2 = text_processing.get_network_stats("test_2.txt")
         # result_3 = text_processing.get_network_stats("test_3.txt")
         # result_4 = text_processing.get_network_stats("test_4.txt")
-        self.assertCountEqual([["lo0", "1234", "active"]], result_1)
+        self.assertCountEqual([Stats("lo0", "1234", "active")], result_1)
+        self.assertCountEqual([Stats("ex0", "5678", "")], result_2)
         # self.assertCountEqual(["ex0", "5678", ""], result_2)
         # self.assertCountEqual(["zo0o", "9101", "active"], result_3)
 

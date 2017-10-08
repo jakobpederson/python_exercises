@@ -33,8 +33,6 @@ en1,,inactive
 p2p0,,inactive
 '''
 from collections import namedtuple
-
-
 Stats = namedtuple("Stats", ["interface", "inet", "status"])
 
 def get_network_stats(file_name):
@@ -59,6 +57,7 @@ def get_interface(lines):
     result = []
     for value in lst:
         var = value.split(':')
+        print(var)
         if var[0] not in ("status", "media") and len(var) > 1:
             result.append(var[0])
     return result
@@ -72,6 +71,7 @@ def get_inet(lines):
 
 def get_status(lines):
     result = []
+    status = False
     for line in lines:
         if line.startswith('status:'):
             result.append(line[7:].replace('\n', ''))
