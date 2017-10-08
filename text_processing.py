@@ -84,12 +84,19 @@ def get_data(lines):
         if len(line.split('status:')) > 1:
             activity.append(line.split('status:'))
             x.append(line)
-    for y in x[1::3]:
-        if not y.startswith('status:'):
-            ind = x.index(y)
-            x.insert(ind + 1, '0')
-    data = [x[y:y+3] for y in range(0, len(x), 3)]
-    return data
+    if len(x) < 3:
+        x.append('0')
+    if len(x) > 3 and len(x) % 3 != 0:
+        for y in x[1::3]:
+            if not y.startswith('status:'):
+                ind = x.index(y)
+                x.insert(ind + 1, '0')
+        data = [x[y:y+3] for y in range(0, len(x), 3)]
+        for lst in data:
+            if len(lst) < 3:
+                lst.append('0')
+        return data
+    return [x]
 
     # print(interface)
     # print(inet)
