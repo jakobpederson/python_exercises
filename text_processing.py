@@ -35,31 +35,36 @@ p2p0,,inactive
 from collections import namedtuple
 Stats = namedtuple("Stats", ["interface", "inet", "status"])
 
-def get_network_stats(file_name):
-    with open(file_name, "r") as f:
-        lines = f.readlines()
-        interface = get_interface(lines)
-        inet = get_inet(lines)
-        status = get_status(lines)
-    results = create_list(interface, inet, status)
-    return results
+def create_list(data):
+    r = range(len(data))
+    for i in data[2::3]:
+        if i not in ('active', 'inactive'):
+            data[i].insert(i, "None")
+    return data
 
-def create_list(interface, inet, status):
-    results = []
-    for i in range(len(interface)):
-        results.append(
-            Stats(interface[i], inet[i], status[i] if status[i] else "")
-        )
-    return results
+def get_network_stats(file_name):
+    result = []
+    with open(file_name, 'r') as f:
+        lines = f.readlines()
+        for line in lines:
+            colon_split = line.split(':')
+            for value in colon_split:
+                if value.startswith(' flag'):
+                    result.append(colon_split[0])
+                if value.startswith('inet '):
+                   result.append(value[5:].strip('\n'))
+                if value.startswith('status'):
+                    for value in colon_split:
+                        if value in ('active', 'inactive'):
+                            result.append(value)
+    return create_list(result)
 
 def get_interface(lines):
-    lst = lines
     result = []
-    for value in lst:
-        var = value.split(':')
-        print(var)
-        if var[0] not in ("status", "media") and len(var) > 1:
-            result.append(var[0])
+    for line in lines:
+        for value in line.split(':'):
+            if value.startswith(' flag'):
+                result.append(line.split(':')[0])
     return result
 
 def get_inet(lines):
