@@ -67,5 +67,3 @@ class TextProcessingTest(unittest.TestCase):
     def get_lines(self, file_name):
         with open(file_name, 'r') as f:
             return f.readlines()
-
-

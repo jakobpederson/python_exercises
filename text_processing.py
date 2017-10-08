@@ -32,112 +32,31 @@ en0,10.176.85.19,active
 en1,,inactive
 p2p0,,inactive
 '''
-from collections import namedtuple
-Stats = namedtuple("Stats", ["interface", "inet", "status"])
-
-def create_list(data):
-    r = range(len(data))
-    for i in data[2::3]:
-        if i not in ('active', 'inactive'):
-            data[i].insert(i, "None")
-    return data
-
-def get_interface(lines):
-    result = []
-    for line in lines:
-        for value in line.split(':'):
-            if value.startswith(' flag'):
-                result.append(line.split(':')[0])
-    return result
-
-def get_inet(lines):
-    result = []
-    for line in lines:
-        if "inet " in line:
-            result.append(line[5:].replace('\n', ''))
-    return result
-
-def get_status(lines):
-    result = {get_just_interface(line): get_data(lines) for line in lines if not_interface(line)}
-    result.pop("blank", None)
-    print(result)
-
-def get_just_interface(line):
-    for value in line.split(':'):
-        if value.startswith(' flags'):
-            return line.split(':')[0]
-    return "blank"
 
 def get_data(lines):
-    interface = []
-    inet = []
-    activity = []
     x = []
     for line in lines:
         count = True
         if len(line.split(' flags')) > 1:
-            interface.append(line.split(' flags')[0])
             x.append(line.split(':')[0])
         if len(line.split('inet ')) > 1:
-            inet.append(line.split('inet ')[1])
             x.append(line[5:].strip('\n'))
         if len(line.split('status:')) > 1:
-            activity.append(line.split('status:'))
             x.append(line)
     if len(x) < 3:
         x.append('0')
-    if len(x) > 3 and len(x) % 3 != 0:
-        for y in x[1::3]:
+    return get_activity(x)
+
+
+def get_activity(data):
+    if len(data) > 3 and len(data) % 3 != 0:
+        for y in data[1::3]:
             if not y.startswith('status:'):
-                ind = x.index(y)
-                x.insert(ind + 1, '0')
-        data = [x[y:y+3] for y in range(0, len(x), 3)]
-        for lst in data:
+                ind = data.index(y)
+                data.insert(ind + 1, '0')
+        result = [data[y:y+3] for y in range(0, len(data), 3)]
+        for lst in result:
             if len(lst) < 3:
                 lst.append('0')
-        return data
-    return [x]
-
-    # print(interface)
-    # print(inet)
-    # print(activity)
-
-    # y = data.split('inet ')
-    # print('inet\n', y)
-    # z = data.split('status')
-    # print('status\n', z)
-
-    # all_results = []
-    # for x in (line.split(' flag') for line in lines):
-    #     if len(x) > 1:
-    #         result.append(x[0])
-    #     elif x[0].startswith('inet '):
-    #         result.append(x[0])
-    #     elif x[0].startswith('status'):
-    #         result.append(x[0])
-    # if len(result) < 3:
-    #     result.append(0)
-    # return result
-
-
-
-
-    # result = {
-    #     line.split(':')[0]: [
-    #         line for line in not_interface(lines)
-    #         ] for line in lines if len(line.split(':')) > 1 and line.split(':')[1].startswith(' flags')}
-    # print(result)
-    # return result
-
-def not_interface(line):
-    data = line.split(':')
-    if len(data) is 1 or not data[1].startswith(' flags'):
-        yield line
-
-    # result = []
-    # status = False
-    # for line in lines:
-    #     if line.startswith('status:'):
-    #         result.append(line[7:].replace('\n', ''))
-    # return result
-
+        return result
+    return [data]
