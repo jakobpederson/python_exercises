@@ -32,53 +32,36 @@ en0,10.176.85.19,active
 en1,,inactive
 p2p0,,inactive
 '''
-from collections import namedtuple
-Stats = namedtuple("Stats", ["interface", "inet", "status"])
 
-def create_list(data):
-    r = range(len(data))
-    for i in data[2::3]:
-        if i not in ('active', 'inactive'):
-            data[i].insert(i, "None")
+INTERFACE = ('lo0', 'gif0', 'en0', 'en1', 'p2p0')
+
+def get_data(lines):
+    data = split_out_data(lines)
+    return fill_gaps(data)
+
+def get_data(lines):
+    data = []
+    for line in lines:
+        if len(line.split(' flags')) > 1:
+            data.append(line.split(':')[0])
+        if len(line.split('inet ')) > 1:
+            data.append(line[5:].strip('\n'))
+        if len(line.split('status:')) > 1:
+            data.append(line.strip('\n'))
     return data
 
-def get_network_stats(file_name):
-    result = []
-    with open(file_name, 'r') as f:
-        lines = f.readlines()
-        for line in lines:
-            colon_split = line.split(':')
-            for value in colon_split:
-                if value.startswith(' flag'):
-                    result.append(colon_split[0])
-                if value.startswith('inet '):
-                   result.append(value[5:].strip('\n'))
-                if value.startswith('status'):
-                    for value in colon_split:
-                        if value in ('active', 'inactive'):
-                            result.append(value)
-    return create_list(result)
+def format_data(g, data):
+    index_1 = next(g)
+    index_2 = next(g)
+    yield index_1, index_2
 
-def get_interface(lines):
-    result = []
-    for line in lines:
-        for value in line.split(':'):
-            if value.startswith(' flag'):
-                result.append(line.split(':')[0])
-    return result
 
-def get_inet(lines):
-    result = []
-    for line in lines:
-        if "inet " in line:
-            result.append(line[5:].replace('\n', ''))
-    return result
+def gen_interface(data):
+    for x in data:
+        if x in INTERFACE:
+            yield data.index(x)
 
-def get_status(lines):
-    result = []
-    status = False
-    for line in lines:
-        if line.startswith('status:'):
-            result.append(line[7:].replace('\n', ''))
-    return result
-
+    # for datum in data:
+    #     if datum in INTERFACE:
+    #         print(datum)
+    #         yield data.index(datum)
