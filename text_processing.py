@@ -37,40 +37,55 @@ def get_data(lines):
     data = split_out_data(lines)
     return fill_gaps(data)
 
-def split_out_data(lines):
+def get_data(lines):
     data = []
     for line in lines:
         if len(line.split(' flags')) > 1:
-            data.append(line.split(':')[0] + '|')
+            data.append(line.split(':')[0])
         if len(line.split('inet ')) > 1:
-            data.append(line[5:].strip('\n') + '||')
+            data.append(line[5:].strip('\n'))
         if len(line.split('status:')) > 1:
-            data.append(line + '|||')
-    for i in range(len(data)):
-        print(data[i])
-        if data[i].endswith('|'):
-            if not data[i+1].endswith('||') and not data[i + 1] == '0':
-                data.insert(i + 1, '0')
-        if data[i].endswith('||'):
-            if not data[i+1].endswith('|||') and not data[i + 1] == '0':
-                data.insert(i + 1, '0')
-    print(data)
+            data.append(line.strip('\n'))
     return data
 
+# def split_out_data(lines):
+#     data = []
+#     for line in lines:
+#         if len(line.split(' flags')) > 1:
+#             data.append(line.split(':')[0] + '|00')
+#         if len(line.split('inet ')) > 1:
+#             data.append(line[5:].strip('\n') + '||0')
+#         if len(line.split('status:')) > 1:
+#             data.append(line.strip('\n') + '|||')
+#     result = []
+#     for i in data:
+#         x = i.split('|00')
+#         if len(x) > 1:
+#             result.append(x[0])
+#         y = i.split('||0')
+#         if len(y) > 1:
+#             result.append(y[0])
+#         z = i.split('|||')
+#         if len(z) > 1:
+#             result.append(z[0])
+#     if result[:3][2].startswith('status'):
+#         print('hi')
+#     return None
 
-def fill_gaps(data):
-    if len(data) < 2:
-        data.append('0')
-    if len(data) < 3:
-        data.append('0')
-    if len(data) > 3 and len(data) % 3 != 0:
-        for y in data[1::3]:
-            if not y.startswith('status:'):
-                ind = data.index(y)
-                data.insert(ind + 1, '0')
-        result = [data[y:y+3] for y in range(0, len(data), 3)]
-        for lst in result:
-            if len(lst) < 3:
-                lst.append('0')
-        return result
-    return [data]
+
+# def fill_gaps(data):
+#     if len(data) < 2:
+#         data.append('0')
+#     if len(data) < 3:
+#         data.append('0')
+#     if len(data) > 3 and len(data) % 3 != 0:
+#         for y in data[1::3]:
+#             if not y.startswith('status:'):
+#                 ind = data.index(y)
+#                 data.insert(ind + 1, '0')
+#         result = [data[y:y+3] for y in range(0, len(data), 3)]
+#         for lst in result:
+#             if len(lst) < 3:
+#                 lst.append('0')
+#         return result
+#     return [data]
