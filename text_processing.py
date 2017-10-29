@@ -33,6 +33,8 @@ en1,,inactive
 p2p0,,inactive
 '''
 
+INTERFACE = ('lo0', 'gif0', 'en0', 'en1', 'p2p0')
+
 def get_data(lines):
     data = split_out_data(lines)
     return fill_gaps(data)
@@ -48,44 +50,18 @@ def get_data(lines):
             data.append(line.strip('\n'))
     return data
 
-# def split_out_data(lines):
-#     data = []
-#     for line in lines:
-#         if len(line.split(' flags')) > 1:
-#             data.append(line.split(':')[0] + '|00')
-#         if len(line.split('inet ')) > 1:
-#             data.append(line[5:].strip('\n') + '||0')
-#         if len(line.split('status:')) > 1:
-#             data.append(line.strip('\n') + '|||')
-#     result = []
-#     for i in data:
-#         x = i.split('|00')
-#         if len(x) > 1:
-#             result.append(x[0])
-#         y = i.split('||0')
-#         if len(y) > 1:
-#             result.append(y[0])
-#         z = i.split('|||')
-#         if len(z) > 1:
-#             result.append(z[0])
-#     if result[:3][2].startswith('status'):
-#         print('hi')
-#     return None
+def format_data(g, data):
+    index_1 = next(g)
+    index_2 = next(g)
+    yield index_1, index_2
 
 
-# def fill_gaps(data):
-#     if len(data) < 2:
-#         data.append('0')
-#     if len(data) < 3:
-#         data.append('0')
-#     if len(data) > 3 and len(data) % 3 != 0:
-#         for y in data[1::3]:
-#             if not y.startswith('status:'):
-#                 ind = data.index(y)
-#                 data.insert(ind + 1, '0')
-#         result = [data[y:y+3] for y in range(0, len(data), 3)]
-#         for lst in result:
-#             if len(lst) < 3:
-#                 lst.append('0')
-#         return result
-#     return [data]
+def gen_interface(data):
+    for x in data:
+        if x in INTERFACE:
+            yield data.index(x)
+
+    # for datum in data:
+    #     if datum in INTERFACE:
+    #         print(datum)
+    #         yield data.index(datum)
