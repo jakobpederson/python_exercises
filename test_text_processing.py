@@ -46,6 +46,18 @@ class TextProcessingTest(unittest.TestCase):
         ]
         self.assertCountEqual(result, expected)
 
+    def test_longer_file(self):
+        lines = self.get_lines('test_4.txt')
+        lines += self.get_lines('test_5.txt')
+        result = text_processing.get_data(lines)
+        expected = [
+            ['lo0', 'inet 1234'],
+            ['gif0', 'inet 9101', 'status:active'],
+            ['lo0', 'inet 1234'],
+            ['p2p0', 'inet 9101'],
+        ]
+        self.assertCountEqual(result, expected)
+
     def get_lines(self, file_name):
         with open(file_name, 'r') as f:
             return f.readlines()
