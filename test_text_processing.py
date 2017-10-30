@@ -12,12 +12,8 @@ class TextProcessingTest(unittest.TestCase):
 
     def setUp(self):
         self.FILES = {
-            "test_1.txt": "lo0: flags=9<up>mtu\noptions=12::\ninet 1234\nstatus:active",
-            "test_2.txt": "en0: flags=9<up>mtu\noptions=12\ninet 5678\n",
-            "test_3.txt": "en1'': flags=9<up>mtu\noptions=12\n",
-            "test_4.txt": "lo0: flags=9<up>mtu\noptions=12\ninet 1234\ngif0: flags=9<up>mtu\noptions=12\ninet 9101\nstatus:active",
-            "test_5.txt": "lo0: flags=9<up>mtu\noptions=12\ninet 1234\np2p0: flags=9<up>mtu\noptions=12\ninet 9101",
-            "test_6.txt": "en0"": flags=9<up>mtu\noptions=12\nlo0: flags=9<up>mtu\noptions=12\ninet 9101\nlo0: flags=9<up>mtu\noptions=12::\ninet 1234\nstatus:active\nlo0: flags=9<up>mtu\noptions=12::\ninet 1234\nstatus:active"
+            "test_1.txt": "lo0: flags=9<up>mtu\noptions=12\ninet 1234\ngif0: flags=9<up>mtu\noptions=12\ninet 9101\nstatus:active",
+            "test_2.txt": "lo0: flags=9<up>mtu\noptions=12\ninet 1234\np2p0: flags=9<up>mtu\noptions=12\ninet 9101",
         }
         self.delete_if_exists()
         for path, data in self.FILES.items():
@@ -38,23 +34,23 @@ class TextProcessingTest(unittest.TestCase):
             pass
 
     def test_get_data(self):
-        lines = self.get_lines('test_4.txt')
+        lines = self.get_lines('test_1.txt')
         result = text_processing.get_data(lines)
         expected = [
-            ['lo0', 'inet 1234'],
-            ['gif0', 'inet 9101', 'status:active'],
+            ['lo0', '1234'],
+            ['gif0', '9101', 'status:active'],
         ]
         self.assertCountEqual(result, expected)
 
     def test_longer_file(self):
-        lines = self.get_lines('test_4.txt')
-        lines += self.get_lines('test_5.txt')
+        lines = self.get_lines('test_1.txt')
+        lines += self.get_lines('test_2.txt')
         result = text_processing.get_data(lines)
         expected = [
-            ['lo0', 'inet 1234'],
-            ['gif0', 'inet 9101', 'status:active'],
-            ['lo0', 'inet 1234'],
-            ['p2p0', 'inet 9101'],
+            ['lo0', '1234'],
+            ['gif0', '9101', 'status:active'],
+            ['lo0', '1234'],
+            ['p2p0', '9101'],
         ]
         self.assertCountEqual(result, expected)
 
