@@ -41,13 +41,15 @@ def get_data(lines):
 
 def get_data(lines):
     data = []
+    mark = 0
     for line in lines:
         if len(line.split(' flags')) > 1:
-            data.append(line.split(':')[0])
-        if len(line.split('inet ')) > 1:
-            data.append(line[5:].strip('\n'))
+            data.append((mark, line.split(':')[0]))
         if len(line.split('status:')) > 1:
-            data.append(line.strip('\n'))
+            data.append((mark, line.strip('\n')))
+        if len(line.split('inet ')) > 1:
+            data.append((mark, line.strip('\n')))
+            mark += 1
     return data
 
 def format_data(g, data):
