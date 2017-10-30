@@ -39,60 +39,19 @@ class TextProcessingTest(unittest.TestCase):
 
     def test_get_data(self):
         lines = self.get_lines('test_4.txt')
-        result = text_processing.get_data(lines)
-        expected = [
-            "lo0",
-            "1234",
-            "gif0",
-            "9101",
-            "status:active"
-        ]
-        self.assertCountEqual(expected, result)
-        lines = self.get_lines('test_5.txt')
-        result = text_processing.get_data(lines)
-        expected = [
-            "lo0",
-            "1234",
-            "p2p0",
-            "9101",
-        ]
-        self.assertCountEqual(expected, result)
-
-    def test_x(self):
-        lines = self.get_lines('test_4.txt')
         lines += self.get_lines('test_5.txt')
         data = text_processing.get_data(lines)
-        new_data = data
         result = []
-        z = []
-        g = text_processing.gen_interface(data)
-        while True:
-            try:
-                x = next(g)
-                y = next(g)
-                z.append(x)
-                z.append(y)
-                a = set(z)
-                    # print(ii)
-
-            except StopIteration:
-                break
-        for ii in range(len(set(z))):
-            if ii + 1 < 4:
-                print(list(a)[ii])
-                result.append(data[list(a)[ii]:list(a)[ii+1]])
-        print(result)
+        tags = set([x[0] for x in data])
+        for tag in tags:
+            result.append([x[1] for x in data if x[0] == tag])
         expected = [
-            [
-                "lo0",
-                "1234",
-                "gif0",
-                "9101",
-                "status:active"
-            ],
+            ['lo0', 'inet 1234'],
+            ['gif0', 'inet 9101'],
+            ['status:active', 'lo0', 'inet 1234'],
+            ['p2p0', 'inet 9101']
         ]
-        self.fail('x')
-        self.assertCountEqual(formatted_data, expected)
+        self.assertCountEqual(result, expected)
 
     def get_lines(self, file_name):
         with open(file_name, 'r') as f:
