@@ -44,13 +44,17 @@ def get_data(lines):
     mark = 0
     for line in lines:
         if len(line.split(' flags')) > 1:
+            mark += 1
             data.append((mark, line.split(':')[0]))
         if len(line.split('status:')) > 1:
             data.append((mark, line.strip('\n')))
         if len(line.split('inet ')) > 1:
             data.append((mark, line.strip('\n')))
-            mark += 1
-    return data
+    result = []
+    tags = set([x[0] for x in data])
+    for tag in tags:
+        result.append([x[1] for x in data if x[0] == tag])
+    return result
 
 def format_data(g, data):
     index_1 = next(g)

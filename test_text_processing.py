@@ -39,17 +39,10 @@ class TextProcessingTest(unittest.TestCase):
 
     def test_get_data(self):
         lines = self.get_lines('test_4.txt')
-        lines += self.get_lines('test_5.txt')
-        data = text_processing.get_data(lines)
-        result = []
-        tags = set([x[0] for x in data])
-        for tag in tags:
-            result.append([x[1] for x in data if x[0] == tag])
+        result = text_processing.get_data(lines)
         expected = [
             ['lo0', 'inet 1234'],
-            ['gif0', 'inet 9101'],
-            ['status:active', 'lo0', 'inet 1234'],
-            ['p2p0', 'inet 9101']
+            ['gif0', 'inet 9101', 'status:active'],
         ]
         self.assertCountEqual(result, expected)
 
