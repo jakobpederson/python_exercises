@@ -33,7 +33,6 @@ en1,,inactive
 p2p0,,inactive
 '''
 
-INTERFACE = ('lo0', 'gif0', 'en0', 'en1', 'p2p0')
 
 def get_data(lines):
     data = split_out_data(lines)
@@ -41,33 +40,41 @@ def get_data(lines):
 
 def get_data(lines):
     data = []
-    mark = 0
+    count = 0
     for line in lines:
-        if len(line.split(' flags')) > 1:
-            mark += 1
-            data.append((mark, line.split(':')[0]))
-        if len(line.split('status:')) > 1:
-            data.append((mark, line.strip('\n')))
-        if len(line.split('inet ')) > 1:
-            data.append((mark, line.strip('\n')))
+        route = router(line)
+        if route:
+            count, data = OPTIONS[route](data, line, count)
     result = []
     tags = set([x[0] for x in data])
     for tag in tags:
         result.append([x[1] for x in data if x[0] == tag])
     return result
 
-def format_data(g, data):
-    index_1 = next(g)
-    index_2 = next(g)
-    yield index_1, index_2
+def router(line):
+    if len(line.split(' flags')) > 1:
+        return 'flags'
+    if len(line.split('status:')) > 1:
+        return 'status'
+    if len(line.split('inet ')) > 1:
+        return 'inet'
+    return None
 
+def add_flag(data, line, count):
+    count += 1
+    data.append((count, line.split(':')[0]))
+    return count, data
 
-def gen_interface(data):
-    for x in data:
-        if x in INTERFACE:
-            yield data.index(x)
+def add_status(data, line, count):
+    data.append((count, line.strip('\n')))
+    return count, data
 
-    # for datum in data:
-    #     if datum in INTERFACE:
-    #         print(datum)
-    #         yield data.index(datum)
+def add_inet(data, line, count):
+    data.append((count, line[5:].strip('\n')))
+    return count, data
+
+OPTIONS = {
+    'flags': add_flag,
+    'status': add_status,
+    'inet': add_inet,
+}
