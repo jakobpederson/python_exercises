@@ -58,7 +58,18 @@ def get_data(lines):
     result.insert(0, HEADER)
     return result
 
+SPLITS = {
+    ' flags': 'flags',
+    'status:': 'status',
+    'inet ': 'inet',
+}
+
 def router(line):
+
+    # for key, item in SPLITS.items():
+    #     if len(line.split(key)) > 1:
+    #         return item
+
     if len(line.split(' flags')) > 1:
         return 'flags'
     if len(line.split('status:')) > 1:
@@ -73,7 +84,7 @@ def add_flag(data, line, count):
     return count, data
 
 def add_status(data, line, count):
-    status = line.strip('\n').strip(' ').split('status: ')[1]
+    status = line.strip('\n').strip(' ')[7:]
     data.append((count, status))
     return count, data
 

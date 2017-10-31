@@ -59,8 +59,9 @@ class TextProcessingTest(unittest.TestCase):
         lines = self.get_lines('test_1.txt')
         result = text_processing.get_data(lines)
         expected = [
+            ('interface', 'inet', 'status'),
             ['lo0', '1234'],
-            ['gif0', '9101', 'status:active'],
+            ['gif0', '9101', 'active'],
         ]
         self.assertCountEqual(result, expected)
 
@@ -68,24 +69,26 @@ class TextProcessingTest(unittest.TestCase):
         lines = self.get_lines('test_1.txt')
         lines += self.get_lines('test_2.txt')
         result = text_processing.get_data(lines)
+        print(result)
         expected = [
+            ('interface', 'inet', 'status'),
             ['lo0', '1234'],
-            ['gif0', '9101', 'status:active'],
+            ['gif0', '9101', 'active'],
             ['lo0', '1234'],
             ['p2p0', '9101'],
         ]
         self.assertCountEqual(result, expected)
 
-    def test_x(self):
+    def test_actual_target_data(self):
         lines = self.get_lines('test_3.txt')
         result = text_processing.get_data(lines)
-        print(result)
-        self.fail('x')
         expected = [
-            ['lo0', '1234'],
-            ['gif0', '9101', 'status:active'],
-            ['lo0', '1234'],
-            ['p2p0', '9101'],
+            ('interface', 'inet', 'status'),
+            ['lo0', '127.0.0.1'],
+            ['gif0'],
+            ['en0', '10.176.85.19', 'active'],
+            ['en1', 'inactive'],
+            ['p2p0', 'inactive']
         ]
         self.assertCountEqual(result, expected)
 
