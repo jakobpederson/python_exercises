@@ -33,6 +33,12 @@ en1,,inactive
 p2p0,,inactive
 '''
 
+HEADER = (
+    'interface',
+    'inet',
+    'status'
+)
+
 
 def get_data(lines):
     data = split_out_data(lines)
@@ -49,6 +55,7 @@ def get_data(lines):
     tags = set([x[0] for x in data])
     for tag in tags:
         result.append([x[1] for x in data if x[0] == tag])
+    result.insert(0, HEADER)
     return result
 
 def router(line):
@@ -62,15 +69,17 @@ def router(line):
 
 def add_flag(data, line, count):
     count += 1
-    data.append((count, line.split(':')[0]))
+    data.append((count, line.split(':')[0].strip(' ')))
     return count, data
 
 def add_status(data, line, count):
-    data.append((count, line.strip('\n')))
+    status = line.strip('\n').strip(' ').split('status: ')[1]
+    data.append((count, status))
     return count, data
 
 def add_inet(data, line, count):
-    data.append((count, line[5:].strip('\n')))
+    stripped = line.strip('\n').strip(' ')
+    data.append((count, stripped.split(' netmask')[0][5:]))
     return count, data
 
 OPTIONS = {
