@@ -12,7 +12,7 @@ class TextProcessingTest(unittest.TestCase):
 
     def setUp(self):
         self.FILES = {
-            "test_1.txt": "lo0: flags=9<up>mtu\noptions=12\ninet 1234\ngif0: flags=9<up>mtu\noptions=12\ninet 9101\nstatus:active",
+            "test_1.txt": "lo0: flags=9<up>mtu\noptions=12\ninet 1234\ngif0: flags=9<up>mtu\noptions=12\ninet 9101\nautoselect status: active",
             "test_2.txt": "lo0: flags=9<up>mtu\noptions=12\ninet 1234\np2p0: flags=9<up>mtu\noptions=12\ninet 9101",
             "test_3.txt": "lo0: flags=8049<UP,LOOPBACK,RUNNING,MULTICAST> mtu 1638\noptions=1203<RXCSUM,TXCSUM,TXSTATUS,SW_TIMESTAMP>\n\
                 inet 127.0.0.1 netmask 0xff000000\n\
@@ -82,6 +82,7 @@ class TextProcessingTest(unittest.TestCase):
     def test_actual_target_data(self):
         lines = self.get_lines('test_3.txt')
         result = text_processing.get_data(lines)
+        print(result)
         expected = [
             ('interface', 'inet', 'status'),
             ['lo0', '127.0.0.1'],

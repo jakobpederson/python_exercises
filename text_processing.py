@@ -84,7 +84,7 @@ def add_flag(data, line, count):
     return count, data
 
 def add_status(data, line, count):
-    status = line.strip('\n').strip(' ')[7:]
+    status = line.strip('\n').strip(' ').split('status: ')[1]
     data.append((count, status))
     return count, data
 
